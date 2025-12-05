@@ -59,7 +59,7 @@ class ProductCatalog {
                 title: "HM380 Hydraulic Breaker Chisel", 
                 material: "42CrMoA Alloy Steel", 
                 application: "Komatsu/JCB Excavator Attachments", 
-                images: ["products/breaker tools/hm380.jfif"] 
+                images: ["products/breaker tools/hm380.jpg"] 
             },
             { 
                 id: 102, 
@@ -107,7 +107,7 @@ class ProductCatalog {
                 title: "Friction Plate", 
                 material: "Composite Friction Material", 
                 application: "Heavy Duty Braking Systems", 
-                images: ["products/breakplates/friction.jfif"] 
+                images: ["products/breakplates/friction.jpg"] 
             },
 
             // --- Bucket Attachments (Folder: bucketattachment) ---
@@ -429,7 +429,7 @@ class ProductCatalog {
                 title: "JCB Center Pin Pad", 
                 material: "Nylon/Rubber", 
                 application: "Pivot Protection", 
-                images: ["products/pads/jcb center pin pad.png"] 
+                images: ["products/pads/jcb center pin pad.jpg"] 
             },
             { 
                 id: 903, 
@@ -613,7 +613,7 @@ class ProductCatalog {
                 title: "Track Link Set", 
                 material: "Forged Steel", 
                 application: "Track Chain Assembly", 
-                images: ["products/under carriage parts/link set.jfif"] 
+                images: ["products/under carriage parts/link set.jpg"] 
             },
             { 
                 id: 1303, 

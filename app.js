@@ -676,6 +676,30 @@ class ProductCatalog {
         if (document.getElementById('categoryButtons')) {
             this.renderCategoryButtons();
         }
+        
+        // Handle URL parameters for category filtering
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        
+        if (categoryParam) {
+            // Verify if category exists before setting it
+            const categoryExists = this.categories.some(cat => cat.id === categoryParam);
+            if (categoryExists) {
+                this.currentCategory = categoryParam;
+                
+                // Update active state of buttons after they are rendered
+                setTimeout(() => {
+                    const btns = document.querySelectorAll('.category-btn');
+                    btns.forEach(btn => {
+                        if (btn.getAttribute('data-category') === categoryParam) {
+                            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                        }
+                    });
+                }, 0);
+            }
+        }
+
         this.renderProducts();
         this.setupEventListeners();
     }
@@ -1113,14 +1137,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate dropdowns immediately
     populateCountrySelects();
 
-    // --- 4. Auto-select Country Code based on IP ---
-    fetch('https://ipapi.co/json/')
-        .then(res => res.json())
-        .then(data => {
-            const selects = document.querySelectorAll('select[name="country_code"]');
-            selects.forEach(select => {
-                const option = select.querySelector(`option[value="${data.country_calling_code}"]`);
-                if (option) option.selected = true;
-            });
-        }).catch(() => {});
+    // --- 4. Auto-select Country Code based on IP (Improved) ---
+    const detectCountry = async () => {
+        try {
+            // Try primary API (ipapi.co)
+            const response = await fetch('https://ipapi.co/json/');
+            if (!response.ok) throw new Error('Primary API failed');
+            const data = await response.json();
+            const code = data.country_calling_code; // Usually returns "+91"
+            setCountryCode(code);
+        } catch (error) {
+            // Fallback API (ipwho.is) - Free, no key required usually
+            try {
+                const response = await fetch('https://ipwho.is/');
+                const data = await response.json();
+                if (data.success) {
+                    const code = data.calling_code; // Returns "91" (no plus)
+                    setCountryCode(code);
+                }
+            } catch (e) {
+                console.log("Auto-detect failed:", e);
+            }
+        }
+    };
+
+    const setCountryCode = (code) => {
+        // Ensure code starts with +
+        const formattedCode = code.toString().startsWith('+') ? code : `+${code}`;
+        
+        const selects = document.querySelectorAll('select[name="country_code"]');
+        selects.forEach(select => {
+            // Try finding exact match
+            let option = select.querySelector(`option[value="${formattedCode}"]`);
+            
+            // If not found, try finding without + (just in case values changed)
+            if (!option) {
+                 option = select.querySelector(`option[value="${formattedCode.replace('+', '')}"]`);
+            }
+
+            if (option) {
+                select.value = option.value;
+                // Visual feedback (optional)
+                select.style.borderColor = '#14ae5c'; 
+            }
+        });
+    };
+
+    detectCountry();
 });

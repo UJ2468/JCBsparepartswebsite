@@ -676,30 +676,6 @@ class ProductCatalog {
         if (document.getElementById('categoryButtons')) {
             this.renderCategoryButtons();
         }
-        
-        // Handle URL parameters for category filtering
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryParam = urlParams.get('category');
-        
-        if (categoryParam) {
-            // Verify if category exists before setting it
-            const categoryExists = this.categories.some(cat => cat.id === categoryParam);
-            if (categoryExists) {
-                this.currentCategory = categoryParam;
-                
-                // Update active state of buttons after they are rendered
-                setTimeout(() => {
-                    const btns = document.querySelectorAll('.category-btn');
-                    btns.forEach(btn => {
-                        if (btn.getAttribute('data-category') === categoryParam) {
-                            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                            btn.classList.add('active');
-                        }
-                    });
-                }, 0);
-            }
-        }
-
         this.renderProducts();
         this.setupEventListeners();
     }
@@ -933,13 +909,6 @@ class SecureFormManager {
 
     init() {
         if (!this.form) return;
-        
-        // --- Auto-set Return URL for GitHub Pages ---
-        const nextInput = this.form.querySelector('input[name="_next"]');
-        if (nextInput) {
-            nextInput.value = window.location.href;
-        }
-
         this.setupValidation();
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         
@@ -1057,10 +1026,17 @@ class SecureFormManager {
         const formData = new FormData(this.form);
 
         try {
-            await fetch('https://formsubmit.co/aashishtraderjcb@gmail.com', {
+            const response = await fetch('https://formsubmit.co/aashishtraderjcb@gmail.com', {
                 method: 'POST',
+                headers: { 
+                    'Accept': 'application/json' 
+                },
                 body: formData
             });
+
+            if (!response.ok) {
+                throw new Error('Form submission failed');
+            }
 
             // Updated selector for success message
             let successMsg = this.modal ? this.modal.querySelector('.success-message') : document.getElementById('successMessage');
@@ -1074,6 +1050,7 @@ class SecureFormManager {
             if (this.modal) setTimeout(() => this.closeModal(), 2000);
 
         } catch (err) {
+            console.error(err);
             alert('Something went wrong. Please try again.');
         } finally {
             btn.disabled = false;

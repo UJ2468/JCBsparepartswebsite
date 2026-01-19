@@ -933,6 +933,13 @@ class SecureFormManager {
 
     init() {
         if (!this.form) return;
+        
+        // --- Auto-set Return URL for GitHub Pages ---
+        const nextInput = this.form.querySelector('input[name="_next"]');
+        if (nextInput) {
+            nextInput.value = window.location.href;
+        }
+
         this.setupValidation();
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         
